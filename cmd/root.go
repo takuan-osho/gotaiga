@@ -61,11 +61,11 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gotaiga.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gotaiga.yml)")
+	rootCmd.PersistentFlags().StringP("url", "", "https://api.taiga.io/api/v1/", "taiga API endpoint")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url"))
+
 }
 
 // initConfig reads in config file and ENV variables if set.
