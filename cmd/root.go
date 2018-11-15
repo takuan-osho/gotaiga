@@ -31,43 +31,46 @@ import (
 
 var cfgFile string
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "gotaiga",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+func NewRootCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "gotaiga",
+		Short: "A brief description of your application",
+		Long: `A longer description that spans multiple lines and likely contains
+	examples and usage of using your application. For example:
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	//	Run: func(cmd *cobra.Command, args []string) { },
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	rootCmd.SetOutput(os.Stdout)
-	if err := rootCmd.Execute(); err != nil {
-		rootCmd.SetOutput(os.Stderr)
-		rootCmd.Println(err)
-		os.Exit(1)
+	Cobra is a CLI library for Go that empowers applications.
+	This application is a tool to generate the needed files
+	to quickly create a Cobra application.`,
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		//	Run: func(cmd *cobra.Command, args []string) { },
 	}
-}
 
-func init() {
 	cobra.OnInitialize(initConfig)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gotaiga.yml)")
-	rootCmd.PersistentFlags().StringP("url", "", "https://api.taiga.io/api/v1/", "taiga API endpoint")
+	cmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gotaiga.yml)")
+	cmd.PersistentFlags().StringP("url", "", "https://api.taiga.io/api/v1/", "taiga API endpoint")
 
-	viper.BindPFlag("url", rootCmd.PersistentFlags().Lookup("url"))
+	viper.BindPFlag("url", cmd.PersistentFlags().Lookup("url"))
 
+	// Add commands
+	cmd.AddCommand(NewAuthCmd())
+	return cmd
+}
+
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	cmd := NewRootCmd()
+	cmd.SetOutput(os.Stdout)
+	if err := cmd.Execute(); err != nil {
+		cmd.SetOutput(os.Stderr)
+		cmd.Println(err)
+		os.Exit(1)
+	}
 }
 
 // initConfig reads in config file and ENV variables if set.
