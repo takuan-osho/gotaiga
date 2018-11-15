@@ -39,5 +39,25 @@ func NewAuthCmd() *cobra.Command {
 		},
 	}
 
+	cmd.AddCommand(NewAuthLoginCmd())
+
 	return cmd
+}
+func NewAuthLoginCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "login",
+		Short: "login a user",
+		Long: `login a user
+
+		API References:
+		* https://taigaio.github.io/taiga-doc/dist/api.html#auth
+		`,
+		RunE: runAuthLoginCmd,
+	}
+	return cmd
+}
+
+func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
+	cmd.Println("call auth login command")
+	return nil
 }
