@@ -24,22 +24,26 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// authCmd represents the auth command
-var authCmd = &cobra.Command{
-	Use:   "auth",
-	Short: "Manage auth API",
-	Long: `Manage auth API
+func NewAuthCmd() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "auth",
+		Short: "Manage auth API",
+		Long: `Manage auth API
 
-References:
-* https://taigaio.github.io/taiga-doc/dist/api.html#_auth
-* https://taigaio.github.io/taiga-doc/dist/api.html#auth
-`,
-	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-	},
+	References:
+	* https://taigaio.github.io/taiga-doc/dist/api.html#_auth
+	* https://taigaio.github.io/taiga-doc/dist/api.html#auth
+	`,
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Help()
+		},
+	}
+
+	return cmd
 }
 
 func init() {
+	authCmd := NewAuthCmd()
 	rootCmd.AddCommand(authCmd)
 
 	// Here you will define your flags and configuration settings.
