@@ -26,7 +26,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -71,7 +70,7 @@ func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
 		return errors.Wrap(err, "NewDefaultClient failed")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeoutTime)
 	defer cancel()
 
 	userAuthDetail, err := client.AuthLogin(ctx)
