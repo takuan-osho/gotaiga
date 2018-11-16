@@ -59,5 +59,7 @@ func NewAuthLoginCmd() *cobra.Command {
 
 func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
 	cmd.Println("call auth login command")
+	client, _ := NewDefaultClient()
+	cmd.Println(client)
 	return nil
 }
