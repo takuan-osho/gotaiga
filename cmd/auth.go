@@ -21,6 +21,14 @@
 package cmd
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"net/http"
+	"strings"
+	"time"
+
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -58,8 +66,54 @@ func NewAuthLoginCmd() *cobra.Command {
 }
 
 func runAuthLoginCmd(cmd *cobra.Command, args []string) error {
-	cmd.Println("call auth login command")
-	client, _ := NewDefaultClient()
-	cmd.Println(client)
+	client, err := NewDefaultClient()
+	if err != nil {
+		return errors.Wrap(err, "NewDefaultClient failed")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	userAuthDetail, err := client.AuthLogin(ctx)
+	if err != nil {
+		return errors.Wrap(err, "AuthLogin failed")
+	}
+
+	cmd.Println(userAuthDetail.AuthToken)
 	return nil
+}
+
+func (client *Client) AuthLogin(ctx context.Context) (*UserAuthDetail, error) {
+	subPath := "auth"
+	payload := &NormalLogin{
+		Type:     "normal",
+		Username: client.Username,
+		Password: client.Password,
+	}
+	b, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
+	body := strings.NewReader(bytes.NewBuffer(b).String())
+
+	req, err := client.NewRequest(ctx, "POST", subPath, body)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.HTTPClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, errors.Errorf("Status Code Error: status code is %v", resp.StatusCode)
+	}
+
+	var userAuthDetailResponse UserAuthDetail
+	if err := decodeBody(resp, &userAuthDetailResponse); err != nil {
+		return nil, err
+	}
+
+	return &userAuthDetailResponse, nil
 }
