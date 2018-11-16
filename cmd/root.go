@@ -23,6 +23,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -86,9 +87,11 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".gotaiga" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".gotaiga")
+		configPath := path.Join(home, ".gotaiga")
+
+		// Search config in $HOME/.gotaiga directory with name "config" (without extension).
+		viper.AddConfigPath(configPath)
+		viper.SetConfigName("config")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
