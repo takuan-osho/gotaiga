@@ -104,6 +104,7 @@ func (client *Client) AuthLogin(ctx context.Context) (*UserAuthDetail, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.Errorf("Status Code Error: status code is %v", resp.StatusCode)
