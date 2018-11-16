@@ -42,8 +42,13 @@ func NewClient(endpointURL, username, password string, options ...func(*Client))
 		Password:    password,
 	}
 
+	// part of functional option patterns
 	for _, option := range options {
 		option(client)
+	}
+
+	if client.HTTPClient == nil {
+		client.HTTPClient = http.DefaultClient
 	}
 
 	discardLogger := log.New(ioutil.Discard, "", log.LstdFlags)
@@ -58,14 +63,7 @@ func NewDefaultClient(options ...func(*Client)) (*Client, error) {
 	endpointURL := viper.GetString("url")
 	username := viper.GetString("username")
 	password := viper.GetString("password")
-
-	return NewClient(endpointURL, username, password, OptionHttpClient(http.DefaultClient))
-}
-
-func OptionHttpClient(httpClient *http.Client) func(*Client) {
-	return func(client *Client) {
-		client.HTTPClient = httpClient
-	}
+	return NewClient(endpointURL, username, password, options...)
 }
 
 func (client *Client) NewRequest(ctx context.Context, method string, subPath string, body io.Reader) (*http.Request, error) {
