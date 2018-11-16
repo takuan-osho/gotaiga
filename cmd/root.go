@@ -88,6 +88,15 @@ func initConfig() {
 		}
 
 		configPath := path.Join(home, ".gotaiga")
+		if _, err := os.Stat(configPath); os.IsNotExist(err) {
+			os.Mkdir(configPath, 0755)
+		}
+		f, err := os.OpenFile(path.Join(configPath, "config.yml"), os.O_CREATE, 0644)
+		defer f.Close()
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 
 		// Search config in $HOME/.gotaiga directory with name "config" (without extension).
 		viper.AddConfigPath(configPath)
