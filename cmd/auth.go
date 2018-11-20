@@ -111,7 +111,7 @@ func (client *Client) AuthLogin(ctx context.Context) (*UserAuthDetail, error) {
 	}
 
 	var userAuthDetailResponse UserAuthDetail
-	if err := decodeBody(resp, &userAuthDetailResponse); err != nil {
+	if err := decodeBody(resp, &userAuthDetailResponse, nil); err != nil {
 		return nil, err
 	}
 

@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 
 	"github.com/spf13/viper"
@@ -81,8 +82,14 @@ func (client *Client) NewRequest(ctx context.Context, method string, subPath str
 	return req, nil
 }
 
-func decodeBody(resp *http.Response, out interface{}) error {
+func decodeBody(resp *http.Response, out interface{}, f *os.File) error {
 	defer resp.Body.Close()
+
+	if f != nil {
+		resp.Body = ioutil.NopCloser(io.TeeReader(resp.Body, f))
+		defer f.Close()
+	}
+
 	decoder := json.NewDecoder(resp.Body)
 	return decoder.Decode(out)
 }
